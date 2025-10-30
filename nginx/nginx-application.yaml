@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-demo
+  namespace: argocd          # Argo CD 的安装命名空间，Application CR 本身要放这里
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/DennyMei/my-gitops-repo.git
+    targetRevision: HEAD
+    path: nginx
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default       # nginx 要部署到的目标 namespace
+
+  syncPolicy:
+    automated:
+      prune: true            # 让 Argo CD 自动删除 Git 里删掉的对象
+      selfHeal: true         # 如果集群内被人手改了，自动纠正回 Git
